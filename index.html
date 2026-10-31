@@ -103,9 +103,87 @@
                 padding: 1rem 2.5rem;
             }
         }
+        /* --- Round mode --- */
+        .timer-track {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .timer-track.visible {
+            opacity: 1;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: white;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+            transform-origin: left center;
+            transform: scaleX(1);
+        }
+
+        .timer-bar.filling {
+            opacity: 0.55;
+            box-shadow: none;
+        }
+
+        .timer-bar.low {
+            animation: pulse 0.6s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { opacity: 1; }
+            to { opacity: 0.35; }
+        }
+
+        .scene-text.shuffling {
+            animation: none !important;
+            opacity: 0.85;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .round-btn {
+            background: transparent;
+            color: white;
+            border: 3px solid white;
+        }
+
+        .round-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .new-scene-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .scene-display.times-up {
+            animation: timesUp 0.8s ease-out;
+        }
+
+        @keyframes timesUp {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.9); }
+            100% { box-shadow: 0 0 0 30px rgba(255, 255, 255, 0); }
+        }
     </style>
 </head>
 <body>
+    <div class="timer-track" id="timerTrack"><div class="timer-bar" id="timerBar"></div></div>
+
     <div class="container">
         <h1>Scenes We'd Like to See</h1>
         
@@ -113,7 +191,10 @@
             <p class="scene-text" id="sceneText">Click "New Scene" to begin!</p>
         </div>
         
-        <button class="new-scene-btn" id="newSceneBtn">New Scene</button>
+        <div class="button-row">
+            <button class="new-scene-btn" id="newSceneBtn">New Scene</button>
+            <button class="new-scene-btn round-btn" id="roundBtn">Start Round</button>
+        </div>
     </div>
 
     <script>
@@ -137,7 +218,6 @@
             "Unlikely lines from a romantic comedy",
             "Bad names for a detective",
             "Things you wouldn't hear on the weather forecast",
-            "Rejected mission statements",
             "Unlikely things to read on a tombstone",
             "Bad things to say at a funeral",
             "Things you wouldn't hear in a library",
@@ -148,7 +228,6 @@
             "Bad names for a retirement home",
             "Things you wouldn't hear on a cooking show",
             "Rejected book titles",
-            "Unlikely things to hear at a wedding reception",
             "Bad things to say during a medical exam",
             "Things you wouldn't see on a museum plaque",
             "Unlikely customer service responses",
@@ -188,11 +267,9 @@
             "Bad names for a children's entertainer",
             "Things you wouldn't hear on a home improvement show",
             "Rejected fortune teller predictions",
-            "Unlikely things to hear at a gym",
             "Bad things to say during a presentation",
             "Things you wouldn't see on a business card",
             "Unlikely responses from a helpline",
-            "Worst things to say at a christening",
             "Things you don't want to hear from your estate agent",
             "Unlikely lines from a sci-fi movie",
             "Bad names for a funeral home",
@@ -202,14 +279,12 @@
             "Bad things to say at a retirement party",
             "Things you wouldn't hear at a meditation retreat",
             "Unlikely phone autocorrects",
-            "Worst things to say at a quincea\u00f1era",
             "Things you don't want to hear from your personal trainer",
             "Unlikely lines from a period drama",
             "Bad names for a martial arts studio",
             "Things you wouldn't hear on a history documentary",
             "Rejected epitaphs",
             "Unlikely things to hear at a spa",
-            "Bad things to say during a video call",
             "Things you wouldn't see in a self-help book",
             "Unlikely GPS directions",
             "Worst things to say at a bar",
@@ -232,7 +307,6 @@
             "Bad things to say during a performance review",
             "Things you wouldn't see in a recipe book",
             "Unlikely text messages from your boss",
-            "Worst things to say at an anniversary dinner",
             "Things you don't want to hear from your teacher",
             "Unlikely lines from a legal drama",
             "Bad names for a dating app",
@@ -244,7 +318,6 @@
             "Unlikely Alexa responses",
             "Worst things to say at a gender reveal party",
             "Things you don't want to hear from your accountant",
-            "Unlikely lines from a disaster movie",
             "Bad names for a pet grooming service",
             "Things you wouldn't hear on an antiques show",
             "Rejected Tinder bios",
@@ -253,7 +326,7 @@
             "Things you wouldn't see in a user manual",
             "Unlikely search engine suggestions",
             "Worst things to say at a bridal shower",
-            "Things you don't want to hear from your real estate agent",
+            "Things you don't want to hear from your doctor",
             "Unlikely lines from a heist movie",
             "Bad names for a nursing home",
             "Things you wouldn't hear on a quiz show",
@@ -262,13 +335,11 @@
             "Bad things to say at a wake",
             "Things you wouldn't hear at a charity gala",
             "Unlikely email subject lines",
-            "Worst things to say at a potluck dinner",
             "Things you don't want to hear from your boss",
             "Unlikely lines from a courtroom drama",
             "Bad names for a plumbing company",
             "Things you wouldn't hear on a podcast about relationships",
             "Rejected vanity license plates",
-            "Unlikely things to hear at a baby's baptism",
             "Bad things to say during a Zoom meeting",
             "Things you wouldn't see in an instruction manual",
             "Unlikely spam email content",
@@ -281,9 +352,7 @@
             "Unlikely things to read in a prenup",
             "Bad things to say at a networking event",
             "Things you wouldn't hear at a meditation class",
-            "Unlikely automatic replies",
-            "Worst things to say at a rehearsal dinner",
-            "Things you don't want to hear from your psychologist",
+            "Things you don't want to hear from your nurse",
             "Unlikely lines from a spy thriller",
             "Bad names for a daycare center",
             "Things you wouldn't hear on a reality TV show",
@@ -292,11 +361,9 @@
             "Bad things to say during a toast",
             "Things you wouldn't see in a cookbook",
             "Unlikely Siri responses",
-            "Worst things to say at a christening ceremony",
             "Things you don't want to hear from your physiotherapist",
             "Unlikely lines from a romance novel",
             "Bad names for a security company",
-            "Things you wouldn't hear on a finance podcast",
             "Rejected email signatures",
             "Unlikely things to read in meeting minutes",
             "Bad things to say at a block party",
@@ -309,14 +376,12 @@
             "Things you wouldn't hear on an educational program",
             "Rejected business card slogans",
             "Unlikely things to hear at a TED talk",
-            "Bad things to say during a job appraisal",
             "Things you wouldn't see in a parenting book",
             "Unlikely calendar reminders",
             "Worst things to say at an engagement party",
-            "Things you don't want to hear from your chiropractor",
+            "Things you don't want to hear from your plumber",
             "Unlikely lines from a detective novel",
             "Bad names for a moving company",
-            "Things you wouldn't hear on a technology podcast",
             "Rejected mission statements for charities",
             "Unlikely things to read in a privacy policy",
             "Bad things to say at a cocktail party",
@@ -326,24 +391,20 @@
             "Things you don't want to hear from your nutritionist",
             "Unlikely lines from a fantasy epic",
             "Bad names for a catering company",
-            "Things you wouldn't hear on a business podcast",
             "Rejected elevator pitches",
             "Unlikely things to hear at a trivia night",
             "Bad things to say during a fire drill",
             "Things you wouldn't see in a fitness book",
             "Unlikely weather app alerts",
             "Worst things to say at a milestone anniversary",
-            "Things you don't want to hear from your dermatologist",
+            "Things you don't want to hear from your builder",
             "Unlikely lines from a vampire movie",
             "Bad names for a wedding planning service",
-            "Things you wouldn't hear on a mental health podcast",
-            "Rejected company values",
             "Unlikely things to read in a will",
             "Bad things to say at a going-away party",
             "Things you wouldn't hear at a farmers market",
-            "Unlikely browser notifications",
             "Worst things to say at a vow renewal",
-            "Things you don't want to hear from your orthodontist",
+            "Things you don't want to hear from your electrician",
             "Unlikely lines from a biographical film",
             "Bad names for a locksmith service",
             "Things you wouldn't hear on a celebrity interview",
@@ -358,193 +419,746 @@
             "Bad names for a home security company",
             "Things you wouldn't hear on a parenting podcast",
             "Rejected mission statements for schools",
-            "Unlikely things to read in a rental agreement",
             "Bad things to say at a costume party",
             "Things you wouldn't hear at a book signing",
             "Unlikely autocomplete suggestions",
             "Worst things to say at a golden wedding anniversary",
-            "Things you don't want to hear from your career counselor",
+            "Things you don't want to hear from your babysitter",
             "Unlikely lines from a prison drama",
             "Bad names for an insurance company",
             "Things you wouldn't hear on a crime documentary",
-            "Rejected company mottos",
             "Unlikely things to hear at a farmers market",
             "Bad things to say during a team building exercise",
             "Things you wouldn't see in a biography",
-            "Unlikely status updates",
-            "Worst things to say at a baptism",
             "Things you don't want to hear from your life coach",
             "Unlikely lines from a survival movie",
             "Bad names for a babysitting service",
             "Things you wouldn't hear on a sports talk show",
             "Rejected advertising jingles",
-            "Unlikely things to read in a employee handbook",
+            "Unlikely things to read in an employee handbook",
             "Bad things to say at a beach party",
             "Things you wouldn't hear at a comedy show",
-            "Unlikely calendar invites",
-            "Worst things to say at a funeral reception",
-            "Things you don't want to hear from your sleep specialist",
+            "Things you don't want to hear from your wedding photographer",
             "Unlikely lines from a dance movie",
             "Bad names for a tattoo parlor",
             "Things you wouldn't hear on a financial advice show",
             "Rejected corporate slogans",
             "Unlikely things to hear at a silent auction",
             "Bad things to say during a workshop",
-            "Things you wouldn't see in a guidebook",
-            "Unlikely reminder notifications",
             "Worst things to say at a memorial service",
-            "Things you don't want to hear from your allergist",
+            "Things you don't want to hear from your pharmacist",
             "Unlikely lines from a sports movie",
             "Bad names for a tour company",
-            "Things you wouldn't hear on an advice podcast",
-            "Rejected brand taglines",
             "Unlikely things to read in a code of conduct",
             "Bad things to say at a games night",
             "Things you wouldn't hear at a protest rally",
             "Unlikely app notifications",
             "Worst things to say at a celebration of life",
-            "Things you don't want to hear from your cardiologist",
+            "Things you don't want to hear from your midwife",
             "Unlikely lines from a buddy cop movie",
             "Bad names for a photography studio",
-            "Things you wouldn't hear on a language learning podcast",
-            "Rejected business mission statements",
             "Unlikely things to hear at a lecture",
             "Bad things to say during a crisis meeting",
             "Things you wouldn't see in a how-to guide",
-            "Unlikely text message alerts",
             "Worst things to say at a sweet sixteen party",
-            "Unlikely lines from a heist thriller",
+            "Things you don't want to hear from your tattoo artist",
             "Bad names for a limousine service",
             "Things you wouldn't hear on a comedy podcast",
-            "Rejected product taglines",
-            "Unlikely things to read in a code of ethics",
             "Bad things to say at a dinner party",
             "Things you wouldn't hear at a stand-up show",
-            "Unlikely calendar events",
-            "Worst things to say at a bar mitzvah reception",
+            "Things you don't want to hear from your barber",
             "Unlikely lines from a treasure hunt movie",
             "Bad names for a dog walking service",
-            "Things you wouldn't hear on a self-improvement podcast",
-            "Rejected university mottos",
             "Unlikely things to hear at a gallery opening",
             "Bad things to say during a negotiation",
             "Things you wouldn't see in an autobiography",
             "Unlikely smart home announcements",
-            "Unlikely lines from a survival thriller",
+            "Things you don't want to hear from your taxi driver",
             "Bad names for a party planning service",
             "Things you wouldn't hear on a history podcast",
-            "Rejected organizational values",
-            "Unlikely things to read in a service agreement",
             "Bad things to say at a karaoke night",
             "Things you wouldn't hear at an open mic night",
             "Unlikely fitness tracker alerts",
-            "Unlikely lines from a wilderness adventure",
+            "Things you don't want to hear from your chef",
             "Bad names for a landscaping company",
-            "Rejected nonprofit mission statements",
             "Unlikely things to hear at a poetry slam",
             "Bad things to say during a brainstorming session",
             "Things you wouldn't see in a memoir",
             "Unlikely smartwatch notifications",
-            "Worst things to say at a couples shower",
-            "Things you don't want to hear from your urologist",
+            "Things you don't want to hear from your car salesman",
             "Unlikely lines from a mountain climbing movie",
             "Bad names for a party rental company",
-            "Things you wouldn't hear on a news analysis show",
-            "Rejected institutional mottos",
-            "Unlikely things to read in a membership agreement",
             "Bad things to say at a New Year's Eve party",
             "Things you wouldn't hear at a debate",
-            "Unlikely phone call transcriptions",
-            "Worst things to say at a house blessing",
+            "Things you don't want to hear from your football coach",
             "Unlikely lines from a shipwreck movie",
-            "Bad names for a event planning company",
-            "Things you wouldn't hear on a literature podcast",
-            "Rejected foundation mission statements",
-            "Unlikely things to hear at a town hall meeting",
+            "Bad names for an event planning company",
             "Bad things to say during a client meeting",
-            "Things you wouldn't see in a journal",
             "Unlikely delivery notifications",
-            "Things you don't want to hear from your neurologist",
+            "Things you don't want to hear from your swimming instructor",
             "Unlikely lines from a plane crash movie",
             "Bad names for a DJ service",
-            "Things you wouldn't hear on a philosophy podcast",
-            "Rejected association taglines",
-            "Unlikely things to read in bylaws",
             "Bad things to say at a tailgate party",
             "Things you wouldn't hear at a magic show",
             "Unlikely banking app alerts",
-            "Worst things to say at a coming out party",
+            "Things you don't want to hear from your waiter",
             "Unlikely lines from a natural disaster movie",
             "Bad names for a balloon decoration service",
-            "Things you wouldn't hear on an economics podcast",
             "Unlikely things to hear at a community meeting",
             "Bad things to say during a pitch meeting",
-            "Things you wouldn't see in a diary entry",
             "Unlikely food delivery updates",
             "Worst things to say at a graduation party",
+            "Things you don't want to hear from your bus driver",
             "Unlikely lines from an earthquake movie",
-            "Bad names for a bounce house rental",
-            "Things you wouldn't hear on an art podcast",
-            "Unlikely things to read in articles of incorporation",
+            "Bad names for a bouncy castle company",
             "Bad things to say at a holiday party",
             "Things you wouldn't hear at a variety show",
             "Unlikely package tracking updates",
-            "Worst things to say at a promotion celebration",
+            "Things you don't want to hear from your postman",
             "Unlikely lines from a tornado movie",
             "Bad names for a face painting service",
-            "Things you wouldn't hear on a music podcast",
-            "Rejected council mottos",
-            "Unlikely things to hear at a panel discussion",
-            "Bad things to say during a strategy session",
-            "Things you wouldn't see in a personal essay",
+            "Rejected slogans for your local council",
             "Unlikely ride share driver messages",
-            "Worst things to say at a retirement celebration",
+            "Things you don't want to hear from your vicar",
             "Unlikely lines from a hurricane movie",
-            "Bad names for a magic show service",
-            "Things you wouldn't hear on a theater podcast",
-            "Unlikely things to read in corporate governance documents",
+            "Bad names for a children's magician",
             "Bad things to say at a Super Bowl party",
             "Things you wouldn't hear at a talent show",
-            "Unlikely food ordering confirmations",
             "Worst things to say at a promotion party",
-            "Unlikely lines from a flood disaster movie",
-            "Bad names for a clown service",
-            "Things you wouldn't hear on a fashion podcast",
-            "Unlikely things to hear at a symposium",
-            "Bad things to say during a sales call",
-            "Worst things to say at a house warming",
-            "Bad names for a petting zoo service",
-            "Unlikely things to read in partnership agreements",
-            "Bad things to say at a Oscar party",
+            "Things you don't want to hear from your zookeeper",
+            "Bad names for a clown",
+            "Things you don't want to hear from your dog walker",
+            "Unlikely lines from a wildfire movie",
+            "Bad names for a petting zoo",
+            "Bad things to say at an Oscar party",
             "Things you wouldn't hear at a circus",
+            "Unlikely messages from the pharmacy",
+            "Things you don't want to hear from your cleaner",
+            "Unlikely lines from a volcano movie",
             "Bad names for a pony ride service",
+            "Things you wouldn't hear on a film podcast",
+            "Unlikely things to hear at a conference",
+            "Things you wouldn't see in a school report",
+            "Unlikely texts from your doctor's surgery",
+            "Worst things to say at a new job celebration",
+            "Things you don't want to hear from the IT department",
+            "Unlikely lines from a tsunami movie",
+            "Bad things to say at a barbecue",
+            "Unlikely test results",
+            "Things you don't want to hear from your best man",
+            "Unlikely lines from an avalanche movie",
+            "Rejected slogans for a trade union",
+            "Things you don't want to hear from your wedding DJ",
+            "Unlikely lines from a blizzard movie",
+            "Rejected slogans for a football club",
+            "Bad things to say at a pool party",
+            "Things you wouldn't hear at a drag show",
+            "Things you don't want to hear from your piano teacher",
+            "Unlikely lines from a meteor strike movie",
+            "Things you wouldn't hear on a gaming podcast",
+            "Rejected rules for a members' club",
+            "Things you don't want to hear from your headteacher",
+            "Bad things to say at a garden party",
+            "Things you don't want to hear from your sat nav",
+            "Unlikely lines from a landslide movie",
+            "Worst things to say at a book launch",
+            "Things you don't want to hear from your butler",
+            "Bad things to say at a brunch party",
+            "Things you wouldn't hear at an improv show",
+            "Unlikely dentist appointment reminders",
+            "Things you don't want to hear from your bodyguard",
+            "Unlikely lines from a pandemic movie",
+            "Bad names for an ice cream van",
+            "Things you don't want to hear from your gardener",
+            "Unlikely lines from a cyber attack movie",
+            "Things you don't want to hear from your window cleaner",
+            "Unlikely lines from an alien invasion movie",
+            "Bad things to say during a tech support call",
+            "Things you don't want to hear from your marriage counselor",
+            "Unlikely lines from a robot uprising movie",
+            "Bad things to say at a murder mystery party",
+            "Things you don't want to hear from your locksmith",
+            "Unlikely lines from a time travel movie",
+            "Bad names for a hot dog van",
+            "Things you don't want to hear from your karate instructor",
+            "Bad names for a pretzel van",
+            "Bad things to say at a themed birthday party",
+            "Things you don't want to hear from your mum",
+            "Bad names for a taco van",
+            "Things you don't want to hear from your dad",
+            "Bad names for a waffle van",
+            "Things you don't want to hear from your gran",
+            "Things you don't want to hear from your kids",
+            "Bad things to say at a casino night party",
+            "Things you don't want to hear from your bank manager",
+            "Things you don't want to hear from your travel agent",
+            "Bad things to say at a masquerade ball",
+            "Things you don't want to hear from your wedding planner",
+            "Things you don't want to hear from your interior designer",
+            "Things you don't want to hear from a magician",
+            "Things you don't want to hear from your dog trainer",
+            "Bad names for a coffee van",
+            "Things you don't want to hear from your canoe instructor",
+            "Bad things to say at a charity ball",
+            "Things you don't want to hear from the dinner lady",
+            "Things you don't want to hear from your climbing instructor",
+            "Things you don't want to hear from your maid of honour",
+            "Things you don't want to hear from your surf instructor",
+            "Bad things to say at an awards ceremony",
+            "Things you wouldn't hear at an art exhibition",
+            "Things you don't want to hear from your holiday rep",
+            "Things you don't want to hear from your ski instructor",
+            "Things you don't want to hear from your plastic surgeon",
+            "Things you don't want to hear from your snowboard instructor",
+            "Bad things to say at a benefit concert",
+            "Things you don't want to hear from your anaesthetist",
+            "Things you don't want to hear from your paramedic",
+            "Bad things to say at a fundraising gala",
+            "Things you don't want to hear from your hotel receptionist",
+            "Bad names for a sandwich van",
+            "Rejected names for a criminal gang",
+            "Things you don't want to hear from your football manager",
+            "Bad things to say at a black tie event",
+            "Things you don't want to hear from your stylist",
+            "Bad names for a pizza van",
+            "Things you don't want to hear from your personal shopper",
+            "Bad names for a burrito van",
+            "Unlikely things to hear on a training day at work",
+            "Things you don't want to hear from a stand-up comedian",
+            "Things you don't want to hear from your scuba instructor",
+            "Things you don't want to hear from a fortune teller",
+            "Bad names for a kebab van",
+            "Things you don't want to hear from the removal men",
+            "Things you don't want to hear from your driving examiner",
+            "Things you don't want to hear from your sports physio",
+            "Things you don't want to hear from your tailor",
+            "Things you don't want to hear from a ventriloquist",
+            "Things you don't want to hear from your pizza delivery driver",
+            "Bad names for a churro van",
+            "Things you don't want to hear from the lollipop lady",
+            "Things you don't want to hear from the school caretaker",
+            "Things you don't want to hear from your bungee jump operator",
+            "Things you don't want to hear from your boyfriend",
+            "Things you don't want to hear from your zip wire operator",
+            "Things you don't want to hear from your girlfriend",
+            "Bad names for a food truck",
+            "Things you don't want to hear from your hot air balloon pilot",
+            "Things you don't want to hear from your paragliding instructor",
+            "Things you don't want to hear from your skydiving instructor",
+            "Rejected tourism slogans for a small village",
+            "Unlikely things to hear at a museum",
+            "Bad names for a band",
+            "Things you wouldn't hear on a sports broadcast",
+            "Bad things to say at a birthday party",
+            "Unlikely things to read in a newspaper",
+            "Bad names for a theme park ride",
+            "Worst pickup lines at a coffee shop",
+            "Unlikely things to hear from a flight attendant",
+            "Bad things to say at a garage sale",
+            "Things you don't want to hear during a massage",
+            "Unlikely things to read on a menu",
+            "Bad names for a superhero",
+            "Things you wouldn't hear at a concert",
+            "Worst things to say to your neighbour",
+            "Bad song choices for karaoke",
+            "Things you don't want to hear from a tour guide",
+            "Unlikely things to read in a history book",
+            "Worst excuses for missing work",
+            "Bad things to say at a talent show",
+            "Things you don't want to hear from your roommate",
+            "Unlikely things to read in a children's book",
+            "Rejected mission statements",
+            "Rejected company values",
+            "Rejected school mottos",
+            "Rejected brand taglines",
+            "Things you don't want to hear from a fairground ride operator",
+            "Things you don't want to hear from your sports referee",
+            "Things you don't want to hear on a rollercoaster",
+            "Things you don't want to hear from the captain of a cruise ship",
+            "Things you don't want to hear from your tattoo artist halfway through",
+            "Things you don't want to hear from your new boss on day one",
+            "Things you don't want to hear on a first date",
+            "Things you don't want to hear in a job interview",
+            "Things you don't want to hear at the airport",
+            "Things you don't want to hear from a lifeguard",
+            "Things you don't want to hear from your Airbnb host",
+            "Things you don't want to hear from your satnav at midnight",
+            "Things you wouldn't hear on a kids' TV show",
+            "Things you wouldn't hear at a football match",
+            "Things you wouldn't hear at a pub quiz",
+            "Things you wouldn't hear on a shopping channel",
+            "Things you wouldn't hear on a dating show",
+            "Things you wouldn't hear on a property show",
+            "Things you wouldn't hear on a baking show",
+            "Things you wouldn't hear at Christmas dinner",
+            "Things you wouldn't hear at a school assembly",
+            "Things you wouldn't hear at a car boot sale",
+            "Things you wouldn't hear on the radio at 3am",
+            "Things you wouldn't hear at a petrol station",
+            "Things you wouldn't hear in a supermarket",
+            "Things you wouldn't hear at a hospital",
+            "Things you wouldn't hear at a Nativity play",
+            "Things you wouldn't hear in a lift",
+            "Things you wouldn't hear on a ghost tour",
+            "Things you wouldn't see on a road sign",
+            "Things you wouldn't see in a hotel room",
+            "Things you wouldn't see at a zoo",
+            "Things you wouldn't see on a dating profile",
+            "Things you wouldn't see in a school prospectus",
+            "Things you wouldn't see on a birthday cake",
+            "Things you wouldn't see in an IKEA catalogue",
+            "Things you wouldn't see on a wedding invitation",
+            "Unlikely lines from a pirate movie",
+            "Unlikely lines from a Christmas movie",
+            "Unlikely lines from a soap opera",
+            "Unlikely lines from a medical drama",
+            "Unlikely lines from a nativity play",
+            "Unlikely lines from a Shakespeare play",
+            "Unlikely lines from a cop show",
+            "Unlikely lines from a fairy tale",
+            "Unlikely lines from a shark movie",
+            "Unlikely lines from a monster movie",
+            "Unlikely lines from a ghost story",
+            "Unlikely lines from a pantomime",
+            "Unlikely lines from a Sherlock Holmes story",
+            "Unlikely lines from a gangster movie",
+            "Unlikely lines from a kung fu movie",
+            "Unlikely lines from a space movie",
+            "Unlikely lines from a talent show judge",
+            "Unlikely things to hear at a football match",
+            "Unlikely things to hear at a sleepover",
+            "Unlikely things to hear at the hairdresser's",
+            "Unlikely things to hear at a school sports day",
+            "Unlikely things to hear in a lift",
+            "Unlikely things to hear at a theme park",
+            "Unlikely things to hear at the dentist",
+            "Unlikely things to hear in a taxi",
+            "Unlikely things to hear at a car wash",
+            "Unlikely things to hear at a campsite",
+            "Unlikely things to hear on a plane",
+            "Unlikely things to hear from a parrot",
+            "Unlikely things to hear from a butler",
+            "Unlikely things to hear from a sports commentator",
+            "Unlikely things to read on a cereal box",
+            "Unlikely things to read on a postcard",
+            "Unlikely things to read on a sign at the zoo",
+            "Unlikely things to read on a T-shirt",
+            "Unlikely things to read on a hotel review",
+            "Unlikely things to read in a school report",
+            "Unlikely things to read in a car manual",
+            "Unlikely things to read on a shampoo bottle",
+            "Unlikely things to read in a wedding speech",
+            "Unlikely things to read on a toilet door",
+            "Unlikely things to read in a birthday card",
+            "Unlikely things to read on a dating app",
+            "Unlikely things to read in a lost and found",
+            "Unlikely complaints to a hairdresser",
+            "Unlikely complaints to a travel agent",
+            "Unlikely complaints to a zoo",
+            "Unlikely complaints to the council",
+            "Unlikely complaints about a holiday",
+            "Unlikely complaints to a cinema",
+            "Bad names for a pub",
+            "Bad names for a hairdresser's",
+            "Bad names for a pet",
+            "Bad names for a boat",
+            "Bad names for a perfume",
+            "Bad names for a new chocolate bar",
+            "Bad names for a breakfast cereal",
+            "Bad names for a baby",
+            "Bad names for a cocktail",
+            "Bad names for a restaurant",
+            "Bad names for a kids' TV show",
+            "Bad names for a boy band",
+            "Bad names for a hospital",
+            "Bad names for a gym",
+            "Bad names for an airline",
+            "Bad names for a car",
+            "Bad names for a hotel",
+            "Bad names for a dog",
+            "Bad names for a wrestler",
+            "Bad names for a cruise ship",
+            "Bad names for a board game",
+            "Bad names for a new flavour of crisps",
+            "Bad names for a toy",
+            "Bad things to say at a wedding",
+            "Bad things to say to a new mum",
+            "Bad things to say at Christmas dinner",
+            "Bad things to say to your driving examiner",
+            "Bad things to say to a referee",
+            "Bad things to say to a waiter",
+            "Bad things to say at a sleepover",
+            "Bad things to say on a plane",
+            "Bad things to say to customs officers",
+            "Bad things to say to your hairdresser",
+            "Bad things to say in a wedding speech",
+            "Bad things to say when meeting the parents",
+            "Bad things to say to a lifeguard",
+            "Bad things to say in a eulogy",
+            "Bad things to say on a rollercoaster",
+            "Bad things to say to a tattoo artist",
+            "Worst things to shout in a library",
+            "Worst things to say during a eulogy",
+            "Worst things to say to a bride",
+            "Worst things to say to your mother-in-law",
+            "Worst things to say on a live news broadcast",
+            "Worst things to say in a lift",
+            "Worst things to say at a parents' evening",
+            "Worst opening lines for a novel",
+            "Worst first lines of a speech",
+            "Worst excuses for not doing homework",
+            "Worst excuses for forgetting an anniversary",
+            "Worst excuses to leave a party early",
+            "Worst excuses for a speeding ticket",
+            "Worst gifts to give your partner",
+            "Worst Christmas presents",
+            "Worst ideas for a first date",
+            "Worst things to find in your sandwich",
+            "Worst things to hear from the next room",
+            "Worst theme park rides",
+            "Worst superpowers",
+            "Worst things to say to a ghost",
+            "Rejected names for the seven dwarfs",
+            "Rejected Bond villains",
+            "Rejected Olympic sports",
+            "Rejected flavours of ice cream",
+            "Rejected names for planets",
+            "Rejected Christmas songs",
+            "Rejected children's toys",
+            "Rejected game show formats",
+            "Rejected superhero sidekicks",
+            "Rejected reality TV shows",
+            "Rejected crisp flavours",
+            "Rejected names for hurricanes",
+            "Rejected national anthems",
+            "Rejected horror movie titles",
+            "Rejected chat-up lines",
+            "Rejected nursery rhymes",
+            "Rejected names for a royal baby",
+            "Rejected ideas for a theme park",
+            "Rejected Valentine's cards",
+            "Rejected fairy tale endings",
+            "Rejected travel slogans",
+            "Unlikely last words",
+            "Unlikely things to say to a genie",
+            "Unlikely job adverts",
+            "Unlikely headlines",
+            "Unlikely things to hear at a wedding",
+            "Unlikely notes left in a lunchbox",
+            "Unlikely things to find in a time capsule",
+            "Unlikely things to find at the back of the fridge",
+            "Unlikely Christmas cracker jokes",
+            "Unlikely Olympic events",
+            "Unlikely things to read on a fridge magnet",
+            "Unlikely things a dog would say",
+            "Unlikely things a cat would say",
+            "Unlikely complaints to Santa",
+            "Unlikely letters to Santa",
+            "Unlikely things to hear on a school trip",
+            "Unlikely things to hear at a job centre",
+            "Unlikely things to say to a talking horse",
+            "Unlikely ransom notes",
+            "Unlikely police reports",
+            "Unlikely things to hear from the tooth fairy",
+            "Unlikely announcements on a train",
+            "Unlikely announcements at a supermarket",
+            "Unlikely things to hear in a haunted house",
+            "Unlikely holiday souvenirs",
+            "Unlikely things to put on your CV",
+            "Unlikely things to say in your sleep",
+            "Unlikely things to put on a shopping list",
+            "Unlikely magic tricks",
+            "Unlikely sequels",
+            "Unlikely things to hear at the end of the world",
+            "Lines cut from fairy tales",
+            "Lines cut from famous speeches",
+            "Lines cut from Christmas movies",
+            "Lines cut from the Bible",
+            "Lines cut from nursery rhymes",
+            "Things that would change the mood at a special occasion",
+            "Things that would ruin a romantic moment",
+            "Things that would kill the mood at a party",
+            "Things that would make a job interview go downhill fast",
+            "Things that would make a first date suddenly awkward",
+            "Things that would bring a wedding to a standstill",
+            "Things that would make a funeral even more awkward",
+            "Things that would empty a room",
+            "Things that would get you thrown out of a restaurant",
+            "Things that would get you banned from the pub",
+            "Things that would get you sent to the head's office",
+            "Things that would get you fired on your first day",
+            "Things that would get you kicked off a plane",
+            "Things that would get you disqualified from a quiz",
+            "Things that would get you uninvited from Christmas",
+            "Things that would make the neighbours call the police",
+            "Things that would make your date leave early",
+            "Things that would make your in-laws hate you",
+            "Things that would make a toddler cry",
+            "Things that would make a priest blush",
+            "Things that would make a lifeguard panic",
+            "Things that would make the whole office go quiet",
+            "Things that would make a taxi driver pull over",
+            "Things that would make a shopkeeper suspicious",
+            "Things that would make airport security nervous",
+            "Things that would make a doctor double-check your notes",
+            "Things that would make a hostage negotiator give up",
+            "Things that would make a horror movie less scary",
+            "Things that would make a horror movie more scary",
+            "Things that would make a children's party go wrong",
+            "Things that would make a dinner party go downhill",
+            "Things that would make a lift journey unbearable",
+            "Things that would make a long car journey longer",
+            "Things that would make a camping trip go wrong",
+            "Things that would raise eyebrows at a family dinner",
+            "Things that would raise suspicion at a murder mystery party",
+            "Things that would turn a picnic into a disaster",
+            "Things that would turn a wedding speech into a roast",
+            "Things that would turn a minor argument into a major one",
+            "Things that would turn a school trip into a news story",
+            "Things that would sour a business deal",
+            "Things that would spoil a surprise party",
+            "Things that would spoil the end of a movie",
+            "Things that would undo a perfect proposal",
+            "Things that would derail a TED talk",
+            "Things that would derail a parents' evening",
+            "Things that would derail a royal visit",
+            "Things that would derail a live TV interview",
+            "Things that would cause a scene at a supermarket checkout",
+            "Things that would cause a stampede at a garden centre",
+            "Things that would start a fight at a book club",
+            "Things that would start a feud with your neighbours",
+            "Things that would start a riot at a village fete",
+            "Things that would clear a dance floor",
+            "Things that would silence a stadium",
+            "Things that would stop a choir mid-song",
+            "Things that would end a friendship instantly",
+            "Things that would end a marriage on the honeymoon",
+            "Things that would end a career on live TV",
+            "Things you'd only say after a few drinks",
+            "Things you'd only say on your last day at work",
+            "Things you'd only say if you'd lost a bet",
+            "Things you'd only say to a stranger on a train",
+            "Things you'd only say once the cameras stopped rolling",
+            "Things you'd only say if you knew nobody was listening",
+            "Things you'd say if you'd just woken up from a coma",
+            "Things you'd say if you were secretly a vampire",
+            "Things you'd say if you were secretly a spy",
+            "Things you'd say if you were secretly a robot",
+            "Things you'd say if you'd accidentally travelled back in time",
+            "Things you'd say if you were trying to get out of jury duty",
+            "Things you'd say to get out of a speeding ticket",
+            "Things you'd say to get out of a second date",
+            "Things you'd say to get an upgrade on a flight",
+            "Things you'd say to talk your way out of trouble",
+            "Things you'd say to cover up a fart",
+            "Things you'd say to cover up a broken vase",
+            "Things you'd say to fill an awkward silence",
+            "Things you'd say to stall for time in an exam",
+            "Things you'd say to someone who's just read your diary",
+            "Things you'd say when you've forgotten someone's name",
+            "Things you'd say when you've just been caught snooping",
+            "Things you'd say when you've just been dumped",
+            "Things you'd say when you've reversed into someone's car",
+            "Things you'd say when you're caught talking to yourself",
+            "Things you'd say when your parents walk in at the wrong moment",
+            "Things you'd say when you've sent a text to the wrong person",
+            "Things you'd say when the waiter catches you licking the plate",
+            "Things you'd say if you'd accidentally won the lottery for someone else",
+            "Signs your date isn't going well",
+            "Signs your boss is about to fire you",
+            "Signs your house might be haunted",
+            "Signs you're at the wrong wedding",
+            "Signs your holiday has been badly organised",
+            "Signs the restaurant isn't very hygienic",
+            "Signs your surgeon is new to the job",
+            "Signs your pet is plotting against you",
+            "Signs you've been at the party too long",
+            "Signs your flatmate is a secret agent",
+            "Signs your kids are up to something",
+            "Signs the pilot has never flown before",
+            "Signs your new neighbours are trouble",
+            "Signs the magician's trick has gone wrong",
+            "How to tell your partner you've crashed the car",
+            "How to break bad news gently",
+            "How to let someone down easily",
+            "How to make a terrible first impression",
+            "How to annoy everyone on a train",
+            "How to get out of a conversation at a party",
+            "How to ruin a family photo",
+            "How to tell your boss you're quitting",
+            "How to win an argument you know you're losing",
+            "How to confess you ate the last biscuit",
+            "Excuses for being caught in the wrong house",
+            "Excuses for turning up to a wedding in fancy dress",
+            "Excuses for why your homework is late",
+            "Excuses for falling asleep at your desk",
+            "Excuses for missing your own birthday party",
+            "Reasons the wedding was called off",
+            "Reasons the school play was cancelled",
+            "Reasons you were asked to leave the zoo",
+            "Reasons the team bus never arrived",
+            "Reasons the fire alarm went off at work",
+            "Reasons you're not allowed back at IKEA",
+            "Reasons Father Christmas is running late",
+            "Awkward things to say when the music suddenly stops",
+            "Awkward things to say when you're the last one at a party",
+            "Awkward things to overhear in a doctor's waiting room",
+            "Awkward things to say on a speakerphone",
+            "Awkward moments at a christening",
+            "Awkward moments at a job interview",
+            "Awkward moments at a school reunion",
+            "Awkward moments on a blind date",
+            "Awkward announcements at a family barbecue",
+            "Unexpected announcements at a wedding reception",
+            "Unexpected confessions on a deathbed",
+            "Unexpected twists in a children's story",
+            "Unexpected things to find out on your honeymoon",
+            "Unexpected requests from a hotel guest",
+            "Unexpected guests at a dinner party",
+            "Questions you shouldn't ask at a funeral",
+            "Questions you shouldn't ask on a first date",
+            "Questions you shouldn't ask in a job interview",
+            "Questions you shouldn't ask your new in-laws",
+            "Questions you shouldn't ask a magician",
+            "Questions you shouldn't ask a pilot mid-flight",
+            "What not to say when meeting the King",
+            "What not to say when your partner asks if they look fat",
+            "What not to say when someone shows you their baby",
+            "What not to say at a gender reveal party",
+            "What not to do at a job interview",
+            "What not to do on a first date",
+            "What not to do at a funeral",
+            "What not to say in a hostage situation",
+            "What not to say when you're pulled over by the police"
         ];
 
+        // ---- Round timings (in seconds) — change these to taste ----
+        const SHUFFLE_SECONDS = 15;   // rapid-fire shuffle before landing on a prompt
+        const COUNTDOWN_SECONDS = 30; // time bar after the prompt is picked
+        const SLOWDOWN_SECONDS = 4;   // last part of the shuffle that slows down to a stop
+
         const sceneText = document.getElementById('sceneText');
+        const sceneDisplay = document.querySelector('.scene-display');
         const newSceneBtn = document.getElementById('newSceneBtn');
+        const roundBtn = document.getElementById('roundBtn');
+        const timerTrack = document.getElementById('timerTrack');
+        const timerBar = document.getElementById('timerBar');
+
+        let lastIndex = -1;
+        let roundRunning = false;
+        let shuffleTimeout = null;
+        let countdownFrame = null;
 
         function getRandomScene() {
-            const randomIndex = Math.floor(Math.random() * scenes.length);
-            return scenes[randomIndex];
+            let i;
+            do { i = Math.floor(Math.random() * scenes.length); } while (i === lastIndex && scenes.length > 1);
+            lastIndex = i;
+            return scenes[i];
         }
 
         function displayNewScene() {
-            // Remove animation class
+            sceneText.classList.remove('shuffling');
             sceneText.style.animation = 'none';
-            
-            // Trigger reflow to restart animation
-            void sceneText.offsetWidth;
-            
-            // Add animation class back and update text
+            void sceneText.offsetWidth; // restart the zoom animation
             sceneText.style.animation = 'zoomIn 0.5s ease-out';
             sceneText.textContent = getRandomScene();
         }
 
-        newSceneBtn.addEventListener('click', displayNewScene);
+        // ---- Round mode ----
+        function startRound() {
+            roundRunning = true;
+            roundBtn.textContent = 'Stop Round';
+            newSceneBtn.disabled = true;
+            sceneText.classList.add('shuffling');
 
-        // Display initial scene on load
+            const start = performance.now();
+            const total = SHUFFLE_SECONDS * 1000;
+            const slowStart = total - SLOWDOWN_SECONDS * 1000;
+
+            // Bar fills up across the top while the shuffle runs
+            timerBar.classList.remove('low');
+            timerBar.classList.add('filling');
+            timerBar.style.transform = 'scaleX(0)';
+            timerTrack.classList.add('visible');
+            function fill() {
+                const p = Math.min(1, (performance.now() - start) / total);
+                timerBar.style.transform = 'scaleX(' + p + ')';
+                if (p < 1 && roundRunning) countdownFrame = requestAnimationFrame(fill);
+            }
+            countdownFrame = requestAnimationFrame(fill);
+
+            function tick() {
+                const elapsed = performance.now() - start;
+                if (elapsed >= total) {
+                    cancelAnimationFrame(countdownFrame);
+                    displayNewScene();
+                    startCountdown();
+                    return;
+                }
+                sceneText.textContent = getRandomScene();
+                // Fast flicker, then ease out into longer gaps like a slot machine
+                let delay = 45;
+                if (elapsed > slowStart) {
+                    const t = (elapsed - slowStart) / (total - slowStart); // 0 → 1
+                    delay = 45 + t * t * 500;
+                }
+                shuffleTimeout = setTimeout(tick, delay);
+            }
+            tick();
+        }
+
+        function startCountdown() {
+            const start = performance.now();
+            const total = COUNTDOWN_SECONDS * 1000;
+            timerBar.classList.remove('low', 'filling');
+            timerBar.style.transform = 'scaleX(1)';
+            timerTrack.classList.add('visible');
+
+            function frame() {
+                const remaining = Math.max(0, total - (performance.now() - start));
+                timerBar.style.transform = 'scaleX(' + (remaining / total) + ')';
+                if (remaining <= 5000) timerBar.classList.add('low');
+                if (remaining > 0) {
+                    countdownFrame = requestAnimationFrame(frame);
+                } else {
+                    finishRound(true);
+                }
+            }
+            countdownFrame = requestAnimationFrame(frame);
+        }
+
+        function hideTimer() {
+            timerTrack.classList.remove('visible');
+            timerBar.classList.remove('low', 'filling');
+        }
+
+        function finishRound(timeUp) {
+            clearTimeout(shuffleTimeout);
+            cancelAnimationFrame(countdownFrame);
+            roundRunning = false;
+            roundBtn.textContent = 'Start Round';
+            newSceneBtn.disabled = false;
+            hideTimer();
+            if (sceneText.classList.contains('shuffling')) displayNewScene();
+            if (timeUp) {
+                sceneDisplay.classList.remove('times-up');
+                void sceneDisplay.offsetWidth;
+                sceneDisplay.classList.add('times-up');
+            }
+        }
+
+        newSceneBtn.addEventListener('click', displayNewScene);
+        roundBtn.addEventListener('click', () => roundRunning ? finishRound(false) : startRound());
+
+        // Keyboard shortcuts for streaming: N = new scene, R = start/stop round
+        document.addEventListener('keydown', (e) => {
+            if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+            const k = e.key.toLowerCase();
+            if (k === 'r') roundBtn.click();
+            else if (k === 'n' && !roundRunning) displayNewScene();
+        });
+
         displayNewScene();
     </script>
 </body>
 </html>
-
